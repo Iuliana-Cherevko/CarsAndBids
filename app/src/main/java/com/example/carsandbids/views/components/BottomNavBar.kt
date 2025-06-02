@@ -1,0 +1,89 @@
+package com.example.carsandbids.views.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.carsandbids.R
+import com.example.carsandbids.ui.theme.Iron
+import com.example.carsandbids.ui.theme.MineShaft
+import com.example.carsandbids.ui.theme.SilverChalice
+import com.example.carsandbids.ui.theme.White
+
+data class BottomNavItem(
+    val label: String,
+    val icon: Int,
+    val isSelected: Boolean
+)
+
+@Composable
+fun BottomNavBar() {
+    val items = listOf(
+        BottomNavItem("Auctions", R.drawable.auctions, true),
+        BottomNavItem("Watchlist", R.drawable.watchlist, false),
+        BottomNavItem("Dashboard", R.drawable.dashboard, false),
+        BottomNavItem("Community", R.drawable.community, false),
+        BottomNavItem("Notifications", R.drawable.notifications, false),
+    )
+
+    Column {
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            thickness = 0.5.dp,
+            color = Iron
+        )
+
+        NavigationBar(
+            containerColor = White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 2.dp)
+        ) {
+            items.forEach { item ->
+                NavigationBarItem(
+                    selected = item.isSelected,
+                    onClick = { /* todo */ },
+                    icon = {
+                        Icon(
+                            painter = painterResource(item.icon),
+                            contentDescription = item.label,
+                            tint = if (item.isSelected) MineShaft else SilverChalice,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = item.label,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (item.isSelected) MineShaft else SilverChalice
+                        )
+                    },
+                    alwaysShowLabel = true,
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color.Transparent
+                    ),
+                )
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+# Kotlin/Java build
+/build/
+/app/build/
+/*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+*.apk
+*.ap_
+*.dex
+
+# Android Studio
+.idea
+*.iws
+*.iml
+*.ipr
+
+# Keystore files
+*.jks
+*.keystore
+
+# Log and temp files
+*.log
+*.tmp
+
+# OS-specific
+*.swp
+*.swo
+Thumbs.db
+ehthumbs.db
+
+# NDK
+obj/
+
+# Crashlytics/Analytics
+fabric.properties
+crashlytics-build.properties
+
+# Gradle
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Misc
+local.properties
