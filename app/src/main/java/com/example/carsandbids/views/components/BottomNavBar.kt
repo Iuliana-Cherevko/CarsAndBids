@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.carsandbids.R
+import com.example.carsandbids.navigation.Routes
 import com.example.carsandbids.ui.theme.Iron
 import com.example.carsandbids.ui.theme.MineShaft
 import com.example.carsandbids.ui.theme.SilverChalice
@@ -25,18 +26,28 @@ import com.example.carsandbids.ui.theme.White
 data class BottomNavItem(
     val label: String,
     val icon: Int,
-    val isSelected: Boolean
+    val isSelected: Boolean,
+    val onClick: () -> Unit,
 )
 
 @Composable
-fun BottomNavBar() {
+fun BottomNavBar(
+    currentRoute: String,
+    onNavigate: (String) -> Unit
+) {
     val items = listOf(
-        BottomNavItem("Auctions", R.drawable.auctions, true),
-        BottomNavItem("Watchlist", R.drawable.watchlist, false),
-        BottomNavItem("Dashboard", R.drawable.dashboard, false),
-        BottomNavItem("Community", R.drawable.community, false),
-        BottomNavItem("Notifications", R.drawable.notifications, false),
+        BottomNavItem("Auctions", R.drawable.auctions, currentRoute == Routes.AuctionList.route) {
+            onNavigate(Routes.AuctionList.route)
+        },
+        BottomNavItem("Showcase", R.drawable.video, currentRoute == Routes.Showcase.route) {
+            onNavigate(Routes.Showcase.route)
+        },
+        //        BottomNavItem("Watchlist", R.drawable.watchlist, false),
+        BottomNavItem("Dashboard", R.drawable.dashboard, currentRoute == "dashboard") { /* todo */ },
+        BottomNavItem("Community", R.drawable.community, currentRoute == "dashboard") { /* todo */ },
+        BottomNavItem("Notifications", R.drawable.notifications, currentRoute == "dashboard") { /* todo */ }
     )
+
 
     Column {
         HorizontalDivider(
@@ -54,7 +65,7 @@ fun BottomNavBar() {
             items.forEach { item ->
                 NavigationBarItem(
                     selected = item.isSelected,
-                    onClick = { /* todo */ },
+                    onClick = item.onClick,
                     icon = {
                         Icon(
                             painter = painterResource(item.icon),

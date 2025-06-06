@@ -25,9 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.carsandbids.R
 import com.example.carsandbids.data.models.Auction
 import com.example.carsandbids.ui.theme.Gray
 import com.example.carsandbids.ui.theme.MineShaft
@@ -95,12 +97,11 @@ fun AuctionListItem(
                     textAlign = TextAlign.Left,
                     modifier = Modifier
                 )
-
                 Icon(
-                    imageVector = Icons.Outlined.Star,
-                    contentDescription = "Search",
+                    painter = painterResource(id = R.drawable.watchlist),
+                    contentDescription = null,
                     tint = MineShaft,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.height(28.dp)
                 )
             }
 

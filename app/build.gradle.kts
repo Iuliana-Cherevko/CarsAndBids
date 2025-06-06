@@ -80,4 +80,7 @@ dependencies {
     // Moshi
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
+
+    implementation(libs.exo.core)
+    implementation(libs.exo.ui)
 }

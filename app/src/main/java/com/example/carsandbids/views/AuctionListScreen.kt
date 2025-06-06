@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.carsandbids.ui.theme.White
 import com.example.carsandbids.viewmodels.AuctionListViewModel
 import com.example.carsandbids.views.components.AuctionListItem
@@ -28,10 +29,13 @@ import com.example.carsandbids.views.components.TopNavBar
 
 @Composable
 fun AuctionListScreen(
+    navController: NavController,
     viewModel: AuctionListViewModel = hiltViewModel(),
     onAuctionClick: (String) -> Unit
 ) {
     val state by viewModel.state
+
+    val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
 
     Box(
         modifier = Modifier
@@ -44,7 +48,18 @@ fun AuctionListScreen(
                 TopNavBar()
             },
             bottomBar = {
-                BottomNavBar()
+                BottomNavBar(
+                    currentRoute = currentRoute,
+                    onNavigate = { route ->
+                        if (route != currentRoute) {
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    }
+                )
             }
         ) { innerPadding ->
             Box(modifier = Modifier

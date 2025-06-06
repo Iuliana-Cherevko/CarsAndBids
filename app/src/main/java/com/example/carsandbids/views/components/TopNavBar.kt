@@ -107,3 +107,7 @@ fun TopBackBar(
         modifier = Modifier.fillMaxWidth(),
     )
 }
+
+
+@Composable
+fun TopShowcaseNavBar() { }
