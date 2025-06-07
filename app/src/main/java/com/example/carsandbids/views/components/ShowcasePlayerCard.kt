@@ -259,7 +259,7 @@ fun ShowcasePlayerCard(
                     painter = painterResource(id = R.drawable.comment),
                     contentDescription = null,
                     tint = White,
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(28.dp)
                 )
             }
             Text(
@@ -285,9 +285,8 @@ fun ShowcasePlayerCard(
             valueRange = 0f..sliderMax,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-                .align(Alignment.BottomCenter)
-                .zIndex(2f),
+                .height(2.dp)
+                .align(Alignment.BottomCenter),
             colors = SliderDefaults.colors(
                 thumbColor = Shamrock,
                 activeTrackColor = Shamrock,
