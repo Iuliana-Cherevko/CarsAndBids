@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +18,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -40,16 +39,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.media3.common.MediaItem
+import androidx.compose.ui.zIndex
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -58,6 +53,7 @@ import androidx.media3.ui.PlayerView
 import com.example.carsandbids.R
 import com.example.carsandbids.data.models.VideoItem
 import com.example.carsandbids.ui.theme.MineShaft
+import com.example.carsandbids.ui.theme.OffGreen
 import com.example.carsandbids.ui.theme.Shamrock
 import com.example.carsandbids.ui.theme.SilverChalice
 import com.example.carsandbids.ui.theme.White
@@ -105,6 +101,13 @@ fun ShowcasePlayerCard(
             override fun onIsPlayingChanged(isPlayingNow: Boolean) {
                 isPlaying = isPlayingNow
             }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED) {
+                    exoPlayer.seekTo(0)
+                    exoPlayer.play()
+                }
+            }
         }
         exoPlayer.addListener(listener)
         onDispose {
@@ -113,13 +116,15 @@ fun ShowcasePlayerCard(
     }
 
     var playbackPosition by remember { mutableStateOf(0L) }
-    var duration by remember { mutableStateOf(0L) }
+    var duration by remember { mutableStateOf(1L) }
+    val sliderMax = (duration.takeIf { it>0 } ?: 1L).toFloat()
 
     LaunchedEffect(isVisible, exoPlayer) {
         if (isVisible) {
+            exoPlayer.play()
             while (true) {
                 playbackPosition = exoPlayer.currentPosition
-                duration = exoPlayer.duration.takeIf { it > 0 } ?: 1L
+                duration = exoPlayer.duration
                 delay(500)
             }
         }
@@ -127,6 +132,7 @@ fun ShowcasePlayerCard(
 
     var isLiked by remember { mutableStateOf(item.isLiked) }
     var likeCount by remember { mutableStateOf(item.likes) }
+    var followText by remember { mutableStateOf("Follow") }
 
     Box(
         modifier = modifier.pointerInput(Unit) {
@@ -197,13 +203,13 @@ fun ShowcasePlayerCard(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Button(
-                    onClick = { /* TODO: Follow action */ },
+                    onClick = { followText = if(followText == "Follow") "Unfollow" else "Follow"},
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                     modifier = Modifier.height(28.dp),
-                    colors = ButtonDefaults.buttonColors(Shamrock)
+                    colors = ButtonDefaults.buttonColors(if(followText == "Follow") Shamrock else OffGreen)
                 ) {
                     Text(
-                        text = "Follow",
+                        text = followText,
                         style = MaterialTheme.typography.labelSmall,
                         color = MineShaft
                     )
@@ -264,32 +270,30 @@ fun ShowcasePlayerCard(
             )
         }
 
+
         Slider(
-            value = playbackPosition.coerceAtMost(duration).toFloat(),
+            value = if (duration > 1000) playbackPosition.coerceAtMost(duration).toFloat() else 0f,
             onValueChange = {
                 exoPlayer.seekTo(it.toLong())
                 playbackPosition = it.toLong()
             },
-            onValueChangeFinished = {},
-            valueRange = 0f..duration.toFloat(),
+            onValueChangeFinished = {
+                if (!exoPlayer.isPlaying && exoPlayer.playbackState == Player.STATE_READY) {
+                    exoPlayer.play()
+                }
+            },
+            valueRange = 0f..sliderMax,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(0.2.dp)
-                .align(Alignment.BottomCenter),
+                .height(4.dp)
+                .align(Alignment.BottomCenter)
+                .zIndex(2f),
             colors = SliderDefaults.colors(
                 thumbColor = Shamrock,
                 activeTrackColor = Shamrock,
                 inactiveTrackColor = SilverChalice,
-                disabledThumbColor = Shamrock
+                disabledThumbColor = Shamrock,
             ),
-            thumb = {
-                Box(
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .size(16.dp)
-                        .background(Shamrock, CircleShape)
-                )
-            }
         )
     }
 }

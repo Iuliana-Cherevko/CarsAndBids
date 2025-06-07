@@ -7,12 +7,13 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
-import com.example.carsandbids.ui.theme.White
 import com.example.carsandbids.viewmodels.ShowcaseViewModel
 import com.example.carsandbids.views.components.BottomNavBar
 import com.example.carsandbids.views.components.ShowcasePlayerCard
@@ -46,7 +47,7 @@ fun ShowcaseScreen(
 
     DisposableEffect(Unit) {
         onDispose {
-            exoPlayer.release()
+            exoPlayer.pause()
         }
     }
 
@@ -56,8 +57,8 @@ fun ShowcaseScreen(
 
     Box(
         modifier = Modifier
+            .background(Color.Black)
             .fillMaxSize()
-            .background(White)
             .navigationBarsPadding()
     ) {
         Scaffold(
@@ -73,12 +74,14 @@ fun ShowcaseScreen(
                                 restoreState = true
                             }
                         }
-                    }
+                    },
+                    color = Color.Black
                 )
             }
         ) { innerPadding ->
             Box(
                 modifier = Modifier
+                    .background(Color.Black)
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {

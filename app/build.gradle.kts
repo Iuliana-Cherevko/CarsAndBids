@@ -83,4 +83,7 @@ dependencies {
 
     implementation(libs.exo.core)
     implementation(libs.exo.ui)
+
+    // change later
+    implementation("androidx.compose.material:material:1.9.0-alpha03")
 }

@@ -1,5 +1,6 @@
 package com.example.carsandbids.views.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.example.carsandbids.R
 import com.example.carsandbids.navigation.Routes
 import com.example.carsandbids.ui.theme.Iron
@@ -33,7 +35,8 @@ data class BottomNavItem(
 @Composable
 fun BottomNavBar(
     currentRoute: String,
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    color: Color = White
 ) {
     val items = listOf(
         BottomNavItem("Auctions", R.drawable.auctions, currentRoute == Routes.AuctionList.route) {
@@ -57,7 +60,7 @@ fun BottomNavBar(
         )
 
         NavigationBar(
-            containerColor = White,
+            containerColor = color,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 2.dp)
@@ -70,7 +73,7 @@ fun BottomNavBar(
                         Icon(
                             painter = painterResource(item.icon),
                             contentDescription = item.label,
-                            tint = if (item.isSelected) MineShaft else SilverChalice,
+                            tint =  if (item.isSelected) (if(color == Color.Black) White else MineShaft) else SilverChalice,
                             modifier = Modifier.size(28.dp)
                         )
                     },
@@ -79,7 +82,7 @@ fun BottomNavBar(
                             text = item.label,
                             maxLines = 1,
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (item.isSelected) MineShaft else SilverChalice
+                            color = if (item.isSelected) (if(color == Color.Black) White else MineShaft) else SilverChalice,
                         )
                     },
                     alwaysShowLabel = true,
