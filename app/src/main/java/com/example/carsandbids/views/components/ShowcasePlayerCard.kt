@@ -1,5 +1,9 @@
 package com.example.carsandbids.views.components
 
+import android.view.SurfaceView
+import android.view.TextureView
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -39,6 +43,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -68,6 +74,7 @@ import com.example.carsandbids.ui.theme.OffGreen
 import com.example.carsandbids.ui.theme.Shamrock
 import com.example.carsandbids.ui.theme.SilverChalice
 import com.example.carsandbids.ui.theme.White
+import com.example.carsandbids.viewmodels.VideoPlayerViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -76,24 +83,35 @@ import kotlinx.coroutines.launch
 @Composable
 fun ShowcasePlayerCard(
     item: VideoItem,
-    exoPlayer: ExoPlayer?,
+    viewModel: VideoPlayerViewModel,
     isVisible: Boolean,
     onTogglePlayPause: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (exoPlayer == null) return
-
+    val exoPlayer = viewModel.exoPlayer ?: return
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val playerView = remember {
+    val playbackPosition by viewModel.playbackPositionFlow.collectAsState()
+    val duration by viewModel.durationFlow.collectAsState()
+    val isPlayerReady = viewModel.isPlayerReady
+
+    var isPlaying by remember { mutableStateOf(false) }
+    var showCenterIcon by remember { mutableStateOf(false) }
+    var isSeeking by remember { mutableStateOf(false) }
+
+    val playerView = remember(item.id) {
         PlayerView(context).apply {
             useController = false
-            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         }
     }
 
-    DisposableEffect(exoPlayer, isVisible) {
+    DisposableEffect(isVisible) {
         if (isVisible) {
             playerView.player = exoPlayer
         } else {
@@ -104,8 +122,6 @@ fun ShowcasePlayerCard(
         }
     }
 
-    var showCenterIcon by remember { mutableStateOf(false) }
-    var isPlaying by remember { mutableStateOf(false) }
 
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
@@ -113,40 +129,36 @@ fun ShowcasePlayerCard(
                 isPlaying = isPlayingNow
             }
 
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_ENDED) {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_ENDED) {
                     exoPlayer.seekTo(0)
                     exoPlayer.play()
                 }
             }
         }
         exoPlayer.addListener(listener)
-        onDispose {
-            exoPlayer.removeListener(listener)
-        }
+        onDispose { exoPlayer.removeListener(listener) }
     }
 
-    var playbackPosition by remember { mutableStateOf(0L) }
-    var duration by remember { mutableStateOf(1L) }
-    val sliderMax = (duration.takeIf { it>0 } ?: 1L).toFloat()
+//    LaunchedEffect(isVisible) {
+//        if (isVisible) {
+//            while (true) {
+//                playbackPosition = exoPlayer.currentPosition
+//                duration = exoPlayer.duration
+//                delay(500)
+//            }
+//        }
+//    }
 
-    LaunchedEffect(isVisible, exoPlayer) {
-        if (isVisible) {
-            exoPlayer.play()
-            while (true) {
-                playbackPosition = exoPlayer.currentPosition
-                duration = exoPlayer.duration
-                delay(500)
-            }
-        }
-    }
+
+
+
 
     var isLiked by remember { mutableStateOf(item.isLiked) }
     var likeCount by remember { mutableStateOf(item.likes) }
     var followText by remember { mutableStateOf("Follow") }
     var showFullTitleText by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
 
     Box(
         modifier = modifier.pointerInput(Unit) {
@@ -168,8 +180,14 @@ fun ShowcasePlayerCard(
         }
     ) {
         AndroidView(
-            factory = { playerView },
-            modifier = Modifier.fillMaxSize()
+            factory = {
+                playerView
+            },
+            update = { playerView ->
+                playerView.player = if (isVisible) exoPlayer else null
+            },
+            modifier = Modifier
+                .fillMaxSize()
         )
 
         AnimatedVisibility(
@@ -180,7 +198,7 @@ fun ShowcasePlayerCard(
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
                     painter = painterResource(
-                        id = if (!isPlaying) R.drawable.play2 else R.drawable.pause2
+                        id = if (isPlaying) R.drawable.play2 else R.drawable.pause2
                     ),
                     contentDescription = null,
                     modifier = Modifier
@@ -313,15 +331,19 @@ fun ShowcasePlayerCard(
         }
 
         Slider(
-            value = if (duration > 1000) playbackPosition.coerceAtMost(duration).toFloat() else 0f,
+            value = playbackPosition.coerceAtMost(duration).toFloat(),
             onValueChange = {
+                if (!isSeeking) {
+                    exoPlayer.pause()
+                    isSeeking = true
+                }
                 exoPlayer.seekTo(it.toLong())
-                playbackPosition = it.toLong()
             },
             onValueChangeFinished = {
-                    exoPlayer.play()
+                exoPlayer.play()
+                isSeeking = false
             },
-            valueRange = 0f..sliderMax,
+            valueRange = 0f..(duration.takeIf { it > 0 } ?: 1L).toFloat(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(2.dp)
