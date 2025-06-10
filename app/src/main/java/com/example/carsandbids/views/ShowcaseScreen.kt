@@ -47,7 +47,7 @@ fun ShowcaseScreen(
 
     DisposableEffect(Unit) {
         onDispose {
-            exoPlayer.pause()
+            exoPlayer.release()
         }
     }
 

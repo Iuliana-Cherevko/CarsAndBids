@@ -1,11 +1,13 @@
 package com.example.carsandbids.views.components
 
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -21,9 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.Button
@@ -48,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -62,7 +61,6 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.carsandbids.R
 import com.example.carsandbids.data.models.VideoItem
-import com.example.carsandbids.navigation.Routes
 import com.example.carsandbids.ui.theme.MineShaft
 import com.example.carsandbids.ui.theme.OffGreen
 import com.example.carsandbids.ui.theme.Shamrock
@@ -86,14 +84,15 @@ fun ShowcasePlayerCard(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val playerView = remember {
+    val playerView = remember(item.id) {
         PlayerView(context).apply {
             useController = false
             resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }
     }
 
-    DisposableEffect(exoPlayer, isVisible) {
+    DisposableEffect(isVisible) {
         if (isVisible) {
             playerView.player = exoPlayer
         } else {
