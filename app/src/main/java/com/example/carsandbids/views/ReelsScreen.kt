@@ -9,19 +9,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
-import com.example.carsandbids.viewmodels.ShowcaseViewModel
+import com.example.carsandbids.viewmodels.ReelsViewModel
 import com.example.carsandbids.views.components.BottomNavBar
-import com.example.carsandbids.views.components.ShowcasePlayerCard
+import com.example.carsandbids.views.components.ReelsPlayerCard
 
 @ExperimentalMaterial3Api
 @Composable
-fun ShowcaseScreen(
-    viewModel: ShowcaseViewModel = viewModel(),
+fun ReelsScreen(
+    viewModel: ReelsViewModel = viewModel(),
     navController: NavController
 ) {
     val context = LocalContext.current
@@ -90,7 +89,7 @@ fun ShowcaseScreen(
                     modifier = Modifier.fillMaxSize()
                 ) { pageIndex ->
                     key(videos[pageIndex].id) {
-                        ShowcasePlayerCard(
+                        ReelsPlayerCard(
                             item = videos[pageIndex],
                             exoPlayer = exoPlayer,
                             isVisible = (pageIndex == pagerState.currentPage),

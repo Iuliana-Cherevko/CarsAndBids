@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import com.example.carsandbids.R
 
-class ShowcaseViewModel : ViewModel() {
+class ReelsViewModel : ViewModel() {
     private val _state = MutableStateFlow<List<VideoItem>>(emptyList())
     val state = _state.asStateFlow()
 

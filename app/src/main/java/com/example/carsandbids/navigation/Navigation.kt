@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.carsandbids.views.AuctionDetailsScreen
 import com.example.carsandbids.views.AuctionListScreen
-import com.example.carsandbids.views.ShowcaseScreen
+import com.example.carsandbids.views.ReelsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,8 +29,8 @@ fun AppNavHost() {
             )
         }
 
-        composable(route = Routes.Showcase.route) {
-            ShowcaseScreen(
+        composable(route = Routes.Reels.route) {
+            ReelsScreen(
                 navController = navController,
             )
         }

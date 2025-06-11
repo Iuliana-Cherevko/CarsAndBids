@@ -1,6 +1,5 @@
 package com.example.carsandbids.views.components
 
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
@@ -72,7 +71,7 @@ import kotlinx.coroutines.launch
 @OptIn(UnstableApi::class)
 @ExperimentalMaterial3Api
 @Composable
-fun ShowcasePlayerCard(
+fun ReelsPlayerCard(
     item: VideoItem,
     exoPlayer: ExoPlayer?,
     isVisible: Boolean,

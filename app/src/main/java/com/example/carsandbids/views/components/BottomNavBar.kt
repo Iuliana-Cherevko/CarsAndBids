@@ -42,8 +42,8 @@ fun BottomNavBar(
         BottomNavItem("Auctions", R.drawable.auctions, currentRoute == Routes.AuctionList.route) {
             onNavigate(Routes.AuctionList.route)
         },
-        BottomNavItem("Showcase", R.drawable.video, currentRoute == Routes.Showcase.route) {
-            onNavigate(Routes.Showcase.route)
+        BottomNavItem("Reels", R.drawable.video, currentRoute == Routes.Reels.route) {
+            onNavigate(Routes.Reels.route)
         },
         //        BottomNavItem("Watchlist", R.drawable.watchlist, false),
         BottomNavItem("Dashboard", R.drawable.dashboard, currentRoute == "dashboard") { /* todo */ },
